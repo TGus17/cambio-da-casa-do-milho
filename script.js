@@ -43,7 +43,14 @@ const clearList = () => {
 }
 
 const fetchCurrency = (currency) => {
-  const endpoint = `${url}?base=${currency}`;
+  const currencyFilterInputValue = document.querySelector('#currency-filter-input').value;
+
+  // https://api.ratesapi.io/api/latest?base=USD
+  let endpoint = `${url}?base=${currency}`;
+  if(currencyFilterInputValue.length > 0) {
+    // https://api.ratesapi.io/api/latest?base=USD&symbols=GBP
+    endpoint = `${endpoint}&symbols=${currencyFilterInputValue}`
+  }
 
   fetch(endpoint)
     .then((response) => response.json())
@@ -63,7 +70,7 @@ const handleError = (errorMessage) => {
 }
 
 const handleRates = (rates) => {
-  const ratesKeys = Object.keys(rates);
+  const ratesKeys = Object.keys(rates).sort();
   
   ratesKeys.forEach((key) => {
     const value = rates[key];
