@@ -14,9 +14,12 @@
   <section class="main-section">
     <label for="currency-input">Digite a moeda:</label>
     <input type="text" placeholder="USD" id="currency-input">
-    <label for="currency-filter-input">Filtrar:</label>
-    <input type="text" placeholder="BRL" id="currency-filter-input">
+    <input id="multiplier" type="number" placeholder="Digite um multiplicador">
+    <label for="currencyFilter">Filtrar</label>
+    <input id="currencyFilter" type="text" placeholder="Filtrar por Moeda">
     <button id="search-button">Pesquisar</button>
+    <button id="erase">Limpar Lista</button>
+    <div id="exercises"></div>
     <ul id="currency-list"></ul>
   </section>
   

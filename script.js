@@ -7,11 +7,12 @@ const url = `${apiInfo.api}${apiInfo.endpoint}`
 
 
 window.onload = () => {
-  setupEventHandlers();  
+  setupEventHandlers();
+  setupEraseButton();
 }
 
 const setupEventHandlers = () => {
-  const searchButton = document.querySelector('#search-button');
+  const searchButton = document.querySelector('#search-button');  
   searchButton.addEventListener('click', handleSearchEvent);
 
   const inputText = document.querySelector('#currency-input');
@@ -22,8 +23,13 @@ const setupEventHandlers = () => {
   });
 }
 
+const setupEraseButton = () => {
+  const eraseButton = document.querySelector('#erase');
+  eraseButton.addEventListener('click', clearList);
+}
+
 const handleSearchEvent = () => {
-  const currencyValue = document.querySelector('#currency-input').value;
+  const currencyValue = document.querySelector('#currency-input').value.toUpperCase();
 
   if (currencyValue === '') {
     renderEmptyAlert()
@@ -37,25 +43,24 @@ const renderEmptyAlert = () => {
   window.alert('Por favor, insira alguma moeda!');
 }
 
+const div = document.querySelector('#exercises');
+
 const clearList = () => {
   const currencyList = document.querySelector('#currency-list');
   currencyList.innerHTML = '';
 }
 
 const fetchCurrency = (currency) => {
-  const currencyFilterInputValue = document.querySelector('#currency-filter-input').value;
-
-  // https://api.ratesapi.io/api/latest?base=USD
   let endpoint = `${url}?base=${currency}`;
-  if(currencyFilterInputValue.length > 0) {
-    // https://api.ratesapi.io/api/latest?base=USD&symbols=GBP
-    endpoint = `${endpoint}&symbols=${currencyFilterInputValue}`
+  const currencyFilter = document.querySelector('#currencyFilter').value;
+
+  if (currencyFilter.length !== 0) {
+  endpoint = `${endpoint}&symbols=${currencyFilter}`;
   }
 
   fetch(endpoint)
     .then((response) => response.json())
     .then((object) => {
-      console.log(object);
       if (object.error) {
         throw new Error(object.error);
       } else {
@@ -70,27 +75,28 @@ const handleError = (errorMessage) => {
 }
 
 const handleRates = (rates) => {
-  const ratesKeys = Object.keys(rates).sort();
+  const ratesKeys = Object.keys(rates);
+  const alphabeticallyRatesKeys = ratesKeys.sort();
+
+    alphabeticallyRatesKeys.forEach((key) => {
+      const multiplier = document.querySelector('#multiplier').value;
   
-  ratesKeys.forEach((key) => {
-    const value = rates[key];
-    renderRate(key, value);
-  })
-}
+      if (multiplier === '') {
+        const value = rates[key];
+        renderRate(key, value);
+      } else {
+        const value = rates[key] * multiplier;
+        renderRate(key, value);
+      }    
+    })
+  }
 
 const renderRate = (key, value) => {
   const currencyList = document.querySelector('#currency-list');
   const formattedValue = value.toFixed(2);
 
   const li = document.createElement('li');
-  li.innerHTML = `<b>${key}:</b> ${formattedValue} <img src="./assets/trash.png">`;
-  li.addEventListener('click', handleItemListClick);
+  li.innerHTML = `<b>${key}:</b> ${formattedValue}`;
 
   currencyList.appendChild(li);
-}
-
-const handleItemListClick = (event) => {
-  const currencyList = document.querySelector('#currency-list');
-  const li = event.target;
-  currencyList.removeChild(li);
 }
